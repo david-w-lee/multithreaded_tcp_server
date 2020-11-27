@@ -8,14 +8,20 @@ namespace multithreaded_tcp_server
         {
             if (args.Length == 0)
             {
-                Console.WriteLine("Invalid argument");
+                Console.WriteLine("Please run with an argument \"server\" or \"client\"");
             }
-            else if(args[0] == "server"){
+            else if(args[0] == "server")
+            {
                 Server.Run();
             }
-            else if(args[0] == "client"){
+            else if(args[0] == "client")
+            {
                 Client.Run();
             }
+            else
+            {
+                Console.WriteLine("Please run with an argument \"server\" or \"client\"");
+            }   
             Console.ReadLine();
         }
     }
