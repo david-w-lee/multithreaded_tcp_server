@@ -40,9 +40,9 @@ public class ServerAsyncOldSyntax
         TcpClient client = server.EndAcceptTcpClient(result);
         Console.WriteLine("Connected!");
         
-        HandleConnection(client);
-
         AsyncAcceptLoop();
+
+        HandleConnection(client);
     }
 
     public void HandleConnection(TcpClient client)

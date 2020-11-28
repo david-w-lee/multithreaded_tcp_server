@@ -47,9 +47,9 @@ public class ServerAsyncOldSyntaxManualReset
         TcpClient client = server.EndAcceptTcpClient(result);
         Console.WriteLine("Connected!");
         
-        HandleConnection(client);
-
         tcpClientConnected.Set();
+
+        HandleConnection(client);
     }
 
     public void HandleConnection(TcpClient client)
