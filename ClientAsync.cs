@@ -3,9 +3,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class Client
+public class ClientAsync
 {
-    public static void Connect(string ip, int port, int clientId)
+    public async static void Connect(string ip, int port, int clientId)
     {
         try 
         {
@@ -16,12 +16,12 @@ public class Client
                 // Convert message to ASCII byte stream and send message to server
                 string message = $"Hello, I am Client {clientId}.";
                 Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-                stream.Write(data, 0, data.Length);
+                await stream.WriteAsync(data, 0, data.Length);
                 Console.WriteLine($"Client({clientId}) sent: {message}");
 
                 // Read response message from server.
                 Byte[] buffer = new Byte[1024];
-                int byteCount = stream.Read(buffer, 0, buffer.Length);
+                int byteCount = await stream.ReadAsync(buffer, 0, buffer.Length);
                 string response = System.Text.Encoding.ASCII.GetString(buffer, 0, byteCount);
                 Console.WriteLine($"Client({clientId}) received: {response}");
             }

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class ServerAsync
+public class ServerAsyncNonblocking
 {
     TcpListener server = null;
-    public ServerAsync(string ip, int port)
+    public ServerAsyncNonblocking(string ip, int port)
     {
         IPAddress localAddr = IPAddress.Parse(ip);
         server = new TcpListener(localAddr, port);
@@ -26,8 +26,7 @@ public class ServerAsync
                 TcpClient client = await server.AcceptTcpClientAsync();
                 Console.WriteLine("Connected!");
 
-                // If you put "await" in the front, connections will not be made concurrently.
-                Task.Run(() => HandleConnection(client));
+                await HandleConnection(client);
             }
         }
         catch (SocketException e)
@@ -66,7 +65,7 @@ public class ServerAsync
     public static void Run()
     {
         Task.Run(() => {
-            var myServer = new ServerAsync("127.0.0.1", 8080);
+            var myServer = new ServerAsyncNonblocking("127.0.0.1", 8080);
             myServer.Start();
         });
     }

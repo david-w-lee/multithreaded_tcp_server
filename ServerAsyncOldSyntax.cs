@@ -5,30 +5,28 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class ServerAsync
+public class ServerAsyncOldSyntax
 {
     TcpListener server = null;
-    public ServerAsync(string ip, int port)
+    public ServerAsyncOldSyntax(string ip, int port)
     {
         IPAddress localAddr = IPAddress.Parse(ip);
         server = new TcpListener(localAddr, port);
     }
 
-    public async void Start()
+    public void Start()
     {
         Console.WriteLine("Starting Server...");
         server.Start();
+        AsyncAcceptLoop();
+    }
+
+    private void AsyncAcceptLoop()
+    {
         try
         {
-            while (true)
-            {
-                Console.WriteLine("Waiting for a connection...");
-                TcpClient client = await server.AcceptTcpClientAsync();
-                Console.WriteLine("Connected!");
-
-                // If you put "await" in the front, connections will not be made concurrently.
-                Task.Run(() => HandleConnection(client));
-            }
+            Console.WriteLine("Waiting for a connection...");
+            IAsyncResult result = server.BeginAcceptTcpClient(AcceptTcpClientCallback, null);
         }
         catch (SocketException e)
         {
@@ -37,7 +35,17 @@ public class ServerAsync
         }
     }
 
-    public async Task HandleConnection(TcpClient client)
+    private void AcceptTcpClientCallback(IAsyncResult result)
+    {
+        TcpClient client = server.EndAcceptTcpClient(result);
+        Console.WriteLine("Connected!");
+        
+        HandleConnection(client);
+
+        AsyncAcceptLoop();
+    }
+
+    public void HandleConnection(TcpClient client)
     {
         var stream = client.GetStream();
         string data = null;
@@ -45,7 +53,7 @@ public class ServerAsync
         int byteCount;
         try
         {
-            while ((byteCount = await stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
+            while ((byteCount = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
                 data = Encoding.ASCII.GetString(bytes, 0, byteCount);
                 Console.WriteLine($"Thread({Thread.CurrentThread.ManagedThreadId}) received: {data}");
@@ -66,7 +74,7 @@ public class ServerAsync
     public static void Run()
     {
         Task.Run(() => {
-            var myServer = new ServerAsync("127.0.0.1", 8080);
+            var myServer = new ServerAsyncOldSyntax("127.0.0.1", 8080);
             myServer.Start();
         });
     }
