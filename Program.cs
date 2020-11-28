@@ -14,6 +14,10 @@ namespace multithreaded_tcp_server
             {
                 Server.Run();
             }
+            else if(args[0] == "serverasync")
+            {
+                ServerAsync.Run();
+            }
             else if(args[0] == "client")
             {
                 Client.Run();
